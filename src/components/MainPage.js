@@ -10,11 +10,13 @@ import "../css/main-body.css"
 function MainPage(){
     const {me, setMe, they, setThey, setAllUsers, allUsers, setMessages} = useContext(userDetails)
     const [desktopView, setDesktopView] = useState(document.documentElement.clientWidth > 750)
+    const [loggedIn, setLoggedIn] = useState(false)
     const [showItem, setShowItem] = useState({contacts: false, chats: true})
     const navigate = useNavigate()
 
     useEffect(() => {
-        if(me){
+        if(Object.keys(me).length > 1){
+            setLoggedIn(true)
             clearInterval(JSON.parse(localStorage.getItem("intervalId")))
             rememberMe()
         }
@@ -33,7 +35,9 @@ function MainPage(){
     window.addEventListener('resize', handleResize)
     
     function rememberMe() {
-        let loggedOut = false
+        // if(loggedIn){
+            
+        // }
 
         const intervalId = setInterval(() => {
             fetch('https://chat-app-back-end-production.up.railway.app/me')
@@ -46,14 +50,14 @@ function MainPage(){
                             setMessages(data.messages)
                         })
                     } else {
-                        loggedOut = true
+                        loggedIn = false
                         navigate('/login')
                     }
                 })
         }, 1000)
 
 
-        loggedOut ? clearInterval(intervalId) :  localStorage.setItem("intervalId", JSON.stringify(intervalId))
+        loggedIn ? clearInterval(intervalId) :  localStorage.setItem("intervalId", JSON.stringify(intervalId))
     }
 
     function getAllUsers() {
